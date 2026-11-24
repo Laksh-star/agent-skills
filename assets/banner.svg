@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-label="Agent Skills — Battle-Tested Playbooks for AI Coding Agents">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1026"/>
+      <stop offset="50%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#312e81"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="50%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="20%" cy="30%" r="45%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="85%" cy="75%" r="40%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="320" rx="18" fill="url(#bg)"/>
+  <rect width="1200" height="320" rx="18" fill="url(#grid)"/>
+  <rect width="1200" height="320" rx="18" fill="url(#glow1)"/>
+  <rect width="1200" height="320" rx="18" fill="url(#glow2)"/>
+
+  <!-- Top accent bar -->
+  <rect x="0" y="0" width="1200" height="5" rx="2.5" fill="url(#accent)"/>
+
+  <!-- Decorative workflow nodes on right -->
+  <g transform="translate(835, 58)" opacity="0.95">
+    <rect x="0" y="0" width="305" height="204" rx="14" fill="#0f172a" fill-opacity="0.72" stroke="#818cf8" stroke-opacity="0.35" stroke-width="1.2"/>
+    <!-- Window dots -->
+    <circle cx="20" cy="18" r="4.5" fill="#f87171"/>
+    <circle cx="36" cy="18" r="4.5" fill="#fbbf24"/>
+    <circle cx="52" cy="18" r="4.5" fill="#34d399"/>
+    <text x="72" y="22" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#94a3b8">skills/replit-to-vercel/</text>
+    <line x1="0" y1="34" x2="305" y2="34" stroke="#ffffff" stroke-opacity="0.08"/>
+
+    <!-- Mini node flow -->
+    <rect x="18" y="48" width="269" height="32" rx="8" fill="#1e293b" stroke="#6366f1" stroke-opacity="0.5"/>
+    <circle cx="34" cy="64" r="5" fill="#818cf8"/>
+    <text x="48" y="68" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#e2e8f0">SKILL.md  · 5-phase runbook</text>
+
+    <rect x="18" y="92" width="269" height="32" rx="8" fill="#1e293b" stroke="#a855f7" stroke-opacity="0.5"/>
+    <circle cx="34" cy="108" r="5" fill="#c084fc"/>
+    <text x="48" y="112" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#e2e8f0">references/ · real gotchas</text>
+
+    <rect x="18" y="136" width="269" height="32" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-opacity="0.5"/>
+    <circle cx="34" cy="152" r="5" fill="#38bdf8"/>
+    <text x="48" y="156" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#e2e8f0">scripts/ · lossless helpers</text>
+
+    <text x="18" y="190" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#34d399">$ npx skills add Laksh-star/agent-skills</text>
+  </g>
+
+  <!-- Brand pill -->
+  <g transform="translate(64, 54)">
+    <rect x="0" y="0" width="332" height="30" rx="15" fill="#ffffff" fill-opacity="0.09" stroke="#818cf8" stroke-opacity="0.45"/>
+    <circle cx="18" cy="15" r="4.5" fill="#34d399"/>
+    <text x="32" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="600" fill="#e0e7ff" letter-spacing="0.4">OPEN AGENT SKILLS STANDARD  ·  SKILL.MD</text>
+  </g>
+
+  <!-- Main Title -->
+  <text x="64" y="148" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="54" font-weight="800" fill="#ffffff" letter-spacing="-1">Agent Skills</text>
+  <text x="64" y="190" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="21" font-weight="400" fill="#cbd5e1">Battle-tested, production-verified playbooks distilled from real engineering workflows.</text>
+
+  <!-- Compatibility pills -->
+  <g transform="translate(64, 224)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="13" font-weight="600">
+    <rect x="0" y="0" width="186" height="32" rx="8" fill="#4f46e5" fill-opacity="0.5" stroke="#818cf8" stroke-opacity="0.6"/>
+    <text x="16" y="21" fill="#eef2ff">Built with Antigravity / Gemini</text>
+
+    <rect x="198" y="0" width="114" height="32" rx="8" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <text x="216" y="21" fill="#e2e8f0">Claude Code</text>
+
+    <rect x="324" y="0" width="76" height="32" rx="8" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <text x="342" y="21" fill="#e2e8f0">Codex</text>
+
+    <rect x="412" y="0" width="80" height="32" rx="8" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <text x="430" y="21" fill="#e2e8f0">Cursor</text>
+
+    <rect x="504" y="0" width="102" height="32" rx="8" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <text x="520" y="21" fill="#e2e8f0">Gemini CLI</text>
+  </g>
+</svg>
