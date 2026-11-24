@@ -4,10 +4,10 @@
 
 <p>
   <a href="#skills-catalog"><strong>Skills Catalog</strong></a> &nbsp;·&nbsp;
-  <a href="#how-these-skills-are-born"><strong>How These Skills Are Born</strong></a> &nbsp;·&nbsp;
+  <a href="#how-these-skills-are-born"><strong>How Skills Are Born</strong></a> &nbsp;·&nbsp;
   <a href="#quick-install"><strong>Quick Install</strong></a> &nbsp;·&nbsp;
-  <a href="#featured-workflow-replit--vercel"><strong>Featured Workflow</strong></a> &nbsp;·&nbsp;
-  <a href="#contributing--philosophy"><strong>Philosophy</strong></a>
+  <a href="#repository-structure"><strong>Structure</strong></a> &nbsp;·&nbsp;
+  <a href="#philosophy"><strong>Philosophy</strong></a>
 </p>
 
 <p>
@@ -21,7 +21,7 @@
 
 ---
 
-A growing collection of **reusable, field-tested agent skills** extracted directly from real production engineering work — not synthetic demos.
+A growing collection of **reusable, field-tested agent skills** extracted directly from real production engineering workflows — not synthetic demos.
 
 > **Built with Google Antigravity / Gemini, portable everywhere:** Every skill here is authored in the open `skills/<name>/SKILL.md` Agent Skills format with progressive-disclosure references and executable helper scripts, so it works out of the box in **Antigravity**, **Gemini CLI**, **Claude Code**, **Codex**, and **Cursor**.
 
@@ -29,25 +29,25 @@ A growing collection of **reusable, field-tested agent skills** extracted direct
 
 ## Skills Catalog
 
-| Skill | What It Does | Key Assets | Status |
+| Skill | What It Does | Field Story & Workflow | Skill Package |
 |---|---|---|---|
-| **[`replit-to-vercel`](./skills/replit-to-vercel/SKILL.md)** | Zero-downtime migration of full-stack apps (React + Vite + Express + Drizzle + PostgreSQL/Neon) from Replit hosting & IDE to Vercel + Neon + GitHub-driven local/agent dev. | [`SKILL.md`](./skills/replit-to-vercel/SKILL.md) · [`replit-gotchas.md`](./skills/replit-to-vercel/references/replit-gotchas.md) · [`migrate-postgres.mjs`](./skills/replit-to-vercel/scripts/migrate-postgres.mjs) | Production-verified |
+| **[`replit-to-vercel`](./skills/replit-to-vercel/SKILL.md)** | Zero-downtime migration of full-stack apps (React + Vite + Express + Drizzle + PostgreSQL/Neon) from Replit to Vercel + Neon + GitHub-driven local/agent dev. | [How we built it (9 traps + diagram)](./docs/replit-to-vercel.md) | [`SKILL.md`](./skills/replit-to-vercel/SKILL.md) · [`replit-gotchas.md`](./skills/replit-to-vercel/references/replit-gotchas.md) · [`migrate-postgres.mjs`](./skills/replit-to-vercel/scripts/migrate-postgres.mjs) |
 
-*More practitioner skills will be added here as we solve new real-world workflows.*
+*New skills are added here as we solve and verify real-world workflows — each with its own field story under [`docs/`](./docs/).*
 
 ---
 
 ## How These Skills Are Born
 
-Most agent skills fail in the wild because they are written from theory. Every skill in this repo follows a **"Ship First, Distill Second"** loop — captured only *after* completing a real end-to-end production run and hitting (and fixing) the actual edge cases:
+Every skill in this repo follows a **"Ship First, Distill Second"** loop — captured only *after* completing a real end-to-end production run and solving the actual edge cases that break in the wild:
 
 ```mermaid
 flowchart LR
-    A["1. Real Production Task<br/>(Live app, live DB, zero downtime)"] --> B["2. Execute End-to-End<br/>(Build, test, deploy, verify)"]
-    B --> C["3. Hit Real-World Traps<br/>(Runtime errors, timeouts, DNS quirks)"]
-    C --> D["4. Fix & Verify Live<br/>(Preview -> Prod -> Cutover)"]
-    D --> E["5. Distill & Sanitize<br/>(Zero secrets, zero private IDs)"]
-    E --> F["6. Reusable Skill Package<br/>(SKILL.md + references/ + scripts/)"]
+    A["1. Real Production Task<br/>(Live app, real constraints)"] --> B["2. Execute End-to-End<br/>(Build, deploy, verify)"]
+    B --> C["3. Hit Real-World Traps<br/>(Runtime, DB, DNS quirks)"]
+    C --> D["4. Fix & Verify Live<br/>(Preview -> Production)"]
+    D --> E["5. Distill & Sanitize<br/>(Zero secrets or private IDs)"]
+    E --> F["6. Ship Skill + Story<br/>(skills/ + docs/)"]
 
     style A fill:#1e1b4b,stroke:#818cf8,color:#ffffff
     style B fill:#1e293b,stroke:#6366f1,color:#ffffff
@@ -57,45 +57,8 @@ flowchart LR
     style F fill:#312e81,stroke:#c084fc,color:#ffffff
 ```
 
-### Example: How `replit-to-vercel` Came Together
-During a real migration of a live content + AI Q&A web application (370+ database records, Postgres-backed admin sessions, LLM endpoints, background telemetry, and a custom domain) off Replit onto Vercel + Neon PostgreSQL, we hit **9 concrete traps** that generic migration guides miss:
-
-| Trap Encountered Live | What Broke | Baked Into Skill |
-|---|---|---|
-| **Node 26 ESM runtime on Vercel** | Build passed, but `/api/*` threw `500 ERR_MODULE_NOT_FOUND` on extensionless relative imports under `"type": "module"` | Explicit `.js` relative imports across `api/` and `server/` |
-| **ESM `import` hoisting** | `dotenv.config()` ran *after* `db.ts` threw `DATABASE_URL must be set` locally | Dedicated `server/env.ts` imported first |
-| **Neon idle autosuspend (`57P01`)** | Source Neon DB dropped the connection mid-migration during single-row inserts | Snapshot-and-close source first + batched transactional inserts (`migrate-postgres.mjs`) |
-| **Serverless killed background work** | Fire-and-forget telemetry promises terminated right after `res.json()` | Wired `@vercel/functions` `waitUntil()` + `attachDatabasePool()` |
-| **4.5 MB serverless body cap** | Admin bulk ZIP uploads (>4.5 MB) would hit `413 FUNCTION_PAYLOAD_TOO_LARGE` | Client-side ZIP extraction + chunked JSON batch uploads |
-| **Read-only filesystem & macOS dev** | Local CSV backup writes throw `EROFS` on Vercel; `reusePort: true` throws `ENOTSUP` on macOS | Guarded disk writes on `process.env.VERCEL` + removed `reusePort` |
-| **Registrar vs. DNS authority** | Hosting panel showed the registrar, while actual NS records lived at another DNS host | Always verify authoritative nameservers via `dig +short NS` first |
-| **DNS `CNAME` coexistence rule** | Old `replit-verify=` `TXT` + `A` records blocked adding Vercel's `CNAME` | Explicitly remove both `A` and `replit-verify=` `TXT` before cutover |
-| **Leftover platform branding** | Default orange Replit `favicon.png` and bloated asset folders carried over | Replace favicon + exclude non-runtime asset folders in `vercel.json` |
-
-Instead of re-discovering those 9 traps on the next migration (or linking back to a messy chat transcript full of project-specific state), we distilled the entire workflow into **`skills/replit-to-vercel/`** — clean, generic, and ready for any agent to execute on day one.
-
----
-
-## Featured Workflow: `replit-to-vercel`
-
-```mermaid
-flowchart TD
-    P1["Phase 1: Audit & Plan<br/>Clone repo · Grep process.env · Flag serverless gotchas"]
-    P2["Phase 2: Read-Only Replit Snapshot<br/>Pull prod secrets & DB URL · Check true DNS with dig NS"]
-    P3["Phase 3: Branch Refactor<br/>Split server/app.ts + api/index.ts · .js ESM imports · vercel.json · Branded favicon"]
-    P4["Phase 4: Provision & Migrate DB<br/>Neon Postgres · drizzle-kit push · migrate-postgres.mjs (1:1 parity + sequence reset)"]
-    P5["Phase 5: Preview -> Prod -> Cutover<br/>Verify Preview URL -> Merge main -> Delete A + TXT -> Add CNAME -> Verify HTTPS"]
-
-    P1 --> P2 --> P3 --> P4 --> P5
-
-    style P1 fill:#1e293b,stroke:#818cf8,color:#f8fafc
-    style P2 fill:#1e293b,stroke:#818cf8,color:#f8fafc
-    style P3 fill:#1e293b,stroke:#a855f7,color:#f8fafc
-    style P4 fill:#1e293b,stroke:#38bdf8,color:#f8fafc
-    style P5 fill:#064e3b,stroke:#10b981,color:#ecfdf5
-```
-
-> **Zero downtime by design:** Replit is never modified, stopped, or redeployed while you migrate. Every route, database query, AI call, and admin session is verified on a Vercel Preview URL before merging to `main` and switching DNS.
+- **`skills/<name>/`** stays lean and token-efficient for coding agents (`SKILL.md`, `references/`, `scripts/`).
+- **`docs/<name>.md`** holds the human-facing origin story, workflow diagram, and lessons learned — keeping this root README clean as the catalog grows.
 
 ---
 
@@ -129,9 +92,11 @@ cp -R ~/agent-skills/skills/replit-to-vercel .agents/skills/
 agent-skills/
 ├── assets/
 │   └── banner.svg                         # Repository header visual
+├── docs/
+│   └── replit-to-vercel.md                # Per-skill origin stories & workflow diagrams
 ├── skills/
 │   └── replit-to-vercel/
-│       ├── SKILL.md                       # Concise 5-phase agent runbook
+│       ├── SKILL.md                       # Concise agent runbook
 │       ├── references/
 │       │   └── replit-gotchas.md          # Detailed failure modes & proven fixes
 │       └── scripts/
@@ -142,10 +107,10 @@ agent-skills/
 
 ---
 
-## Contributing & Philosophy
+## Philosophy
 
-1. **Progressive disclosure:** Keep `SKILL.md` sharp and scannable; put deep diagnostics in `references/` and repeatable mechanics in `scripts/`.
-2. **Real scars only:** Every gotcha listed should correspond to a real failure mode verified against live infrastructure.
+1. **Progressive disclosure:** Keep `SKILL.md` sharp and scannable for agents; put deep diagnostics in `references/`, repeatable mechanics in `scripts/`, and human narratives in `docs/`.
+2. **Real scars only:** Every gotcha listed corresponds to a real failure mode verified against live infrastructure.
 3. **Zero secrets, ever:** No personal domains, account IDs, API keys, or client-specific details — only reusable patterns.
 4. **Agent-agnostic by default:** Even when authored in Antigravity / Gemini, keep instructions cleanly portable across coding agents.
 
