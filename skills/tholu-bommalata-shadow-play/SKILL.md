@@ -37,7 +37,7 @@ References: [conventions and sources](./references/conventions.md) · [Telugu vo
 
 ### 1. Setup
 ```bash
-pip install --break-system-packages skia-python fonttools brotli scipy   # PIL must have raqm
+python3 -m pip install skia-python fonttools brotli scipy   # PIL must have raqm
 python3 scripts/setup_fonts.py fonts la te dev
 ```
 

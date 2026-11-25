@@ -52,7 +52,7 @@ Brief, PDF or video: see [intake.md](./references/intake.md). Quick version: `pd
 
 ### 3. Setup
 ```bash
-pip install --break-system-packages skia-python fonttools brotli scipy   # PIL must report features.check('raqm') True
+python3 -m pip install skia-python fonttools brotli scipy   # PIL must report features.check('raqm') True
 python3 scripts/setup_fonts.py fonts la te dev    # Latin with IAST diacritics, Telugu, Devanagari
 ```
 Render one test line per script at full size and look at it before building scenes.

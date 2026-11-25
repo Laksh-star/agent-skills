@@ -78,3 +78,11 @@ The full list, with symptoms and fixes, is in [`references/gotchas.md`](../skill
 - **The storybook look has a ceiling.** Characters face the front and move with eased poses; it suits explainers and children's tales. For a more polished film, use the prompt pack with an image and video model, and keep the code-drawn film as the animatic.
 - **Translations are unproofread.** The skill says so every time and lists the word choices a native reader should check.
 - **Music is synthesised.** A drone, a melodic line and percussion generated in numpy; a real recording is always better.
+
+---
+
+## Status
+
+- **Last verified:** 2026-11-25
+- **Verified against:** full template render from a fresh copy of the repo, in English and Telugu, including the score and chunked join.
+- **Hosts:** agent-agnostic

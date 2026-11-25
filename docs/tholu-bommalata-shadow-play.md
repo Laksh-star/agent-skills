@@ -61,3 +61,11 @@ flowchart LR
 This is an homage in the form's visual language, not a reproduction of any maker's puppets, and it cannot replace a troupe. The puppeteer families, concentrated today in Anantapur, Guntur and Nellore districts, are hereditary performers and makers of a tradition that sources describe as endangered. For anything published, the skill recommends crediting the tradition by name and, where possible, commissioning a practising troupe for the voice, the songs and a review.
 
 The Telugu voice-script guide in [`references/voice-script.md`](../skills/tholu-bommalata-shadow-play/references/voice-script.md) is explicit about its limits: troupes perform in Telugu, but the families speak Aare, a Marathi dialect, among themselves, and that inflection has to come from a performer.
+
+---
+
+## Status
+
+- **Last verified:** 2026-11-25
+- **Verified against:** full template render from a fresh copy of the repo, in English and Telugu, including the score and chunked join.
+- **Hosts:** agent-agnostic
