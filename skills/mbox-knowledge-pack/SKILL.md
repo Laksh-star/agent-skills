@@ -1,6 +1,6 @@
 ---
 name: mbox-knowledge-pack
-description: "Convert local .mbox email exports into local-first knowledge packs for analysis, curation, wiki compile staging, writing projects, and optional fine-tuning dataset preparation. Use when asked to analyze an mbox, summarize old emails, curate email threads, prepare a Karpathy/Claude-style wiki raw import, or derive supervised examples from an email corpus. Do not use for live mailbox operations."
+description: "Convert local .mbox email exports into local-first knowledge packs for analysis, curation, wiki compile staging, writing projects, and optional fine-tuning dataset preparation. Use when asked to analyze an mbox, summarize old emails, curate email threads, prepare a Karpathy-style LLM wiki raw import, or derive supervised examples from an email corpus. Do not use for live mailbox operations."
 ---
 
 # Mbox Knowledge Pack
