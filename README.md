@@ -71,13 +71,6 @@ Each skill links to its runbook (`SKILL.md`) and to a field story under [`docs/`
 | **[`story-to-animated-film`](./skills/story-to-animated-film/SKILL.md)** | Turns a brief, a PDF, or a video into an original code-drawn animated story film in a style the user picks, with captions and a generated score, plus vertical shorts, language versions, and a prompt pack. No image or video model needed. | [7 traps + diagram](./docs/story-to-animated-film.md) |
 | **[`tholu-bommalata-shadow-play`](./skills/tholu-bommalata-shadow-play/SKILL.md)** | Tells a story as a code-drawn shadow-puppet film in the visual language of Tholu Bommalata, opening with the traditional invocation, with a fidelity check against published sources and a written list of departures. | [The question that fixed it](./docs/tholu-bommalata-shadow-play.md) |
 
-### Coming Soon
-
-These are written but held back until their companion repositories are public, so they work from a fresh clone:
-
-- **`competitive-intelligence-agent`** — sample-first and live CocoIndex-backed competitive intelligence through MCP tools.
-- **`opencut-producer`** — turns local video into reviewed OpenCut edit candidates with ducking, captions, and human-approved renders.
-
 ### Host-Specific Plugins (Maintained Elsewhere)
 
 - **[`codex-capability-profiler`](https://github.com/Laksh-star/codex-skills)** — Codex-only plugin that profiles local Codex capability maturity.
