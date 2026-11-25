@@ -32,6 +32,8 @@ A growing collection of **reusable, field-tested agent skills** extracted direct
 | Skill | What It Does | Field Story & Workflow | Skill Package |
 |---|---|---|---|
 | **[`replit-to-vercel`](./skills/replit-to-vercel/SKILL.md)** | Zero-downtime migration of full-stack apps (React + Vite + Express + Drizzle + PostgreSQL/Neon) from Replit to Vercel + Neon + GitHub-driven local/agent dev. | [How we built it (9 traps + diagram)](./docs/replit-to-vercel.md) | [`SKILL.md`](./skills/replit-to-vercel/SKILL.md) · [`replit-gotchas.md`](./skills/replit-to-vercel/references/replit-gotchas.md) · [`migrate-postgres.mjs`](./skills/replit-to-vercel/scripts/migrate-postgres.mjs) |
+| **[`story-to-animated-film`](./skills/story-to-animated-film/SKILL.md)** | Turns a brief, a PDF or a video into an original code-drawn animated story film in a style the user picks, with captions and a generated score, plus vertical shorts, language versions and a prompt pack. No image or video model needed. | [How we built it (7 traps + diagram)](./docs/story-to-animated-film.md) | [`SKILL.md`](./skills/story-to-animated-film/SKILL.md) · [`gotchas.md`](./skills/story-to-animated-film/references/gotchas.md) · [`template_film.py`](./skills/story-to-animated-film/scripts/template_film.py) · [`render_chunks.py`](./skills/story-to-animated-film/scripts/render_chunks.py) |
+| **[`tholu-bommalata-shadow-play`](./skills/tholu-bommalata-shadow-play/SKILL.md)** | Tells a story as a code-drawn shadow-puppet film in the visual language of Tholu Bommalata, opening with the traditional invocation, with a fidelity check against published sources and a written list of departures. | [How we built it (and the question that fixed it)](./docs/tholu-bommalata-shadow-play.md) | [`SKILL.md`](./skills/tholu-bommalata-shadow-play/SKILL.md) · [`conventions.md`](./skills/tholu-bommalata-shadow-play/references/conventions.md) · [`template_shadow.py`](./skills/tholu-bommalata-shadow-play/scripts/template_shadow.py) |
 
 *New skills are added here as we solve and verify real-world workflows — each with its own field story under [`docs/`](./docs/).*
 
@@ -91,16 +93,27 @@ cp -R ~/agent-skills/skills/replit-to-vercel .agents/skills/
 ```text
 agent-skills/
 ├── assets/
-│   └── banner.svg                         # Repository header visual
+│   ├── banner.svg                         # Repository header visual
+│   └── *.jpg                              # Stills used in the field stories
 ├── docs/
-│   └── replit-to-vercel.md                # Per-skill origin stories & workflow diagrams
+│   ├── replit-to-vercel.md                # Per-skill origin stories & workflow diagrams
+│   ├── story-to-animated-film.md
+│   └── tholu-bommalata-shadow-play.md
 ├── skills/
-│   └── replit-to-vercel/
-│       ├── SKILL.md                       # Concise agent runbook
-│       ├── references/
-│       │   └── replit-gotchas.md          # Detailed failure modes & proven fixes
-│       └── scripts/
-│           └── migrate-postgres.mjs       # Reusable transactional Postgres migrator
+│   ├── replit-to-vercel/
+│   │   ├── SKILL.md                       # Concise agent runbook
+│   │   ├── references/
+│   │   │   └── replit-gotchas.md          # Detailed failure modes & proven fixes
+│   │   └── scripts/
+│   │       └── migrate-postgres.mjs       # Reusable transactional Postgres migrator
+│   ├── story-to-animated-film/
+│   │   ├── SKILL.md
+│   │   ├── references/                    # styles, intake, shorts & languages, prompt pack, gotchas
+│   │   └── scripts/                       # core drawing lib, character rig, template film, fonts, score, chunked renderer
+│   └── tholu-bommalata-shadow-play/
+│       ├── SKILL.md
+│       ├── references/                    # conventions & sources, Telugu voice script, gotchas
+│       └── scripts/                       # shadow-puppet layer, template play, score, fonts
 ├── LICENSE                                # MIT License
 └── README.md
 ```
