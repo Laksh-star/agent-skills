@@ -1,0 +1,4 @@
+interface:
+  display_name: "Content OS Manager"
+  short_description: "Set up an agent-assisted markdown content OS."
+  default_prompt: "Use this skill to set up my Content OS in the default workspace folder."

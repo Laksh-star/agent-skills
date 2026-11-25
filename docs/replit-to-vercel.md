@@ -71,3 +71,11 @@ See the full executable runbook in [`skills/replit-to-vercel/SKILL.md`](../skill
 ```bash
 npx skills add Laksh-star/agent-skills
 ```
+
+---
+
+## Status
+
+- **Last verified:** 2026-11-25
+- **Verified against:** a live zero-downtime Replit → Vercel + Neon production migration (Preview → Production → DNS cutover).
+- **Hosts:** agent-agnostic.

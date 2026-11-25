@@ -3,5 +3,12 @@ node_modules/
 .env
 .env.local
 .env.*.local
+
+# Generated artifacts (never ship inside skills/)
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
+.venv/
+dist/
+*.skill
