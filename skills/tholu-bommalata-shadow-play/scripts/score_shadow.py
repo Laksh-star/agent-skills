@@ -46,14 +46,16 @@ def reed(f0, f1, d, vol, phase):
     env = np.clip(x / 0.04, 0, 1) * np.clip((d - x) / 0.08, 0, 1) * (0.85 + 0.15 * np.sin(2 * np.pi * 5 * x))
     return vol * env * sum(np.sin(k * ph) / k ** 0.9 for k in range(1, 9)) * 0.4
 
+def att(x): return np.clip(x / 0.004, 0, 1)   # 4 ms attack: instant attacks make clicks that AAC turns into peaks over 0 dB
+
 def thump(f0=92, d=.22, v=1.0):
-    x = np.arange(int(d * SR)) / SR; return v * np.sin(2 * np.pi * (f0 * x + 18 * (1 - np.exp(-x * 30)) / 30)) * np.exp(-x * 16)
+    x = np.arange(int(d * SR)) / SR; return v * np.sin(2 * np.pi * (f0 * x + 18 * (1 - np.exp(-x * 30)) / 30)) * np.exp(-x * 16) * att(x)
 def ring(f, d=.28, v=1.0):
-    x = np.arange(int(d * SR)) / SR; return v * (np.sin(2 * np.pi * f * x) + .4 * np.sin(2 * np.pi * f * 2.01 * x)) * np.exp(-x * 13)
+    x = np.arange(int(d * SR)) / SR; return v * (np.sin(2 * np.pi * f * x) + .4 * np.sin(2 * np.pi * f * 2.01 * x)) * np.exp(-x * 13) * att(x)
 def tick(d=.06, v=1.0):
-    n = int(d * SR); x = np.arange(n) / SR; return v * lfilter([1, -1], [1, -.3], np.random.RandomState(n).randn(n)) * np.exp(-x * 70) * .3
+    n = int(d * SR); x = np.arange(n) / SR; return v * lfilter([1, -1], [1, -.3], np.random.RandomState(n).randn(n)) * np.exp(-x * 70) * att(x) * .3
 def ting(v=1.0):
-    x = np.arange(int(1.2 * SR)) / SR; return v * (np.sin(2 * np.pi * 2637 * x) + .6 * np.sin(2 * np.pi * 4187 * x) + .3 * np.sin(2 * np.pi * 6200 * x)) * np.exp(-x * 5)
+    x = np.arange(int(1.2 * SR)) / SR; return v * (np.sin(2 * np.pi * 2637 * x) + .6 * np.sin(2 * np.pi * 4187 * x) + .3 * np.sin(2 * np.pi * 6200 * x)) * np.exp(-x * 5) * att(x)
 
 def note_f(sa, idx, scale): o, dg = divmod(idx, 5); return sa * 2 * 2 ** ((scale[dg] + 12 * o) / 12)
 

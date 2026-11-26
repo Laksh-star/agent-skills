@@ -18,7 +18,7 @@ Tholu Bommalata is a living, hereditary and endangered tradition of Andhra Prade
 
 Story intake, the story bible, vertical shorts and language versions follow the `story-to-animated-film` skill in this repo; this skill supplies the look.
 
-References: [conventions and sources](./references/conventions.md) · [Telugu voice script](./references/voice-script.md) · [gotchas](./references/gotchas.md).
+References: [conventions and sources](./references/conventions.md) · [story.md format](../story-to-animated-film/references/story-format.md) · [eval](./eval.md) · [Telugu voice script](./references/voice-script.md) · [gotchas](./references/gotchas.md).
 
 ---
 
@@ -33,6 +33,19 @@ References: [conventions and sources](./references/conventions.md) · [Telugu vo
 
 ---
 
+## Craft Rules
+
+| Rule | Number | Checked by |
+|---|---|---|
+| Hook: the first story scene poses its question, readable with the sound off | within 3 s of the invocation ending | `qa/contact.jpg`, eval.md |
+| The ending answers the opening question | the `Hook:` header | eval.md |
+| Captions sit in the black cloth band and are readable | ≤ 2 lines, < 21 characters a second | story.py |
+| The show never stalls: a hop, gesture, entrance or lamp dip | every 2–3 s; never still ≥ 4 s outside title and end cards | qa.py |
+| Voiced versions keep the narrator's pace | about 2.5 spoken words a second; retime to the recording | eval.md |
+| Delivery loudness | −16 LUFS ±1, true peak ≤ −1 dBTP | qa.py |
+
+---
+
 ## Workflow
 
 ### 1. Setup
@@ -41,8 +54,11 @@ pip install --break-system-packages skia-python fonttools brotli scipy   # PIL m
 python3 scripts/setup_fonts.py fonts la te dev
 ```
 
-### 2. Build from the template
-Copy [scripts/template_shadow.py](./scripts/template_shadow.py): a runnable play with the invocation, two scenes, entrances, a lamp dip at scene changes, and captions in English and Telugu. It draws with [scripts/shadow.py](./scripts/shadow.py):
+### 2. Write story.md
+Copy [scripts/story.md](./scripts/story.md): headers (including `Prologue:` for the invocation's length and `Hook:`), a scene table with source references and source/invented flags, entrances blocked by side in the beat column, and timed `## Prologue: <lang>` and `## Captions: <lang>` blocks. Scene and caption times are in story time, which starts when the invocation ends. Validate with `python3 scripts/story.py story.md`.
+
+### 3. Build from the template
+Copy [scripts/template_shadow.py](./scripts/template_shadow.py): a runnable play with the invocation, two scenes, entrances, a lamp dip at scene changes, and captions in English and Telugu, all timed from story.md (`STORY=path` picks the file). It draws with [scripts/shadow.py](./scripts/shadow.py):
 
 | Function | What it draws |
 |---|---|
@@ -57,10 +73,10 @@ Specs are dicts (`skin, low, border, gold, sash, thread, hair='shikha'|'bun'|'ja
 
 Poses, as (near arm, far arm) in degrees: hanging `(12,14) (-14,10)`; joined hands `ANJ`; pointing `(112,6)`; blessing `(124,26)`; hand to chest `(28,150)`; startled `(118,44) (108,56)`; speaking `(72, 52 + 24*sin(t*2.6))`. Walk with `bob=hop(t)`; ease between poses with `mixa(a, b, eio(u, t0, t1))`.
 
-### 3. Check
+### 4. Check
 Contact sheet at every beat including the invocation (1, 4, 6, 10.5, 13 s). Look for puppets colliding during bows, props crossing faces, and captions per script at full size.
 
-### 4. Score and render
+### 5. Score and render
 ```bash
 python3 scripts/score_shadow.py --prologue 14 --duration 146 --out score.wav --quiet 17.5-25 --cuts 25,47,55 --hits 17.9
 ```
@@ -71,11 +87,17 @@ python3 scripts/render_chunks.py join final.mp4 score.wav part_00.mp4 part_01.mp
 ```
 Render chunks in the foreground; many sandboxes stop background jobs soon after a turn ends. About 0.35 s per frame on 2 cores.
 
-### 5. Voice version (optional)
+### 6. QA
+```bash
+python3 scripts/qa.py final.mp4 --story story.md --out qa
+```
+Then look at `qa/contact.jpg` and `qa/opening.jpg` and answer [eval.md](./eval.md), which adds the fidelity checks. Fix or name every "no".
+
+### 7. Voice version (optional)
 For a Telugu voice version, write a recording script following [voice-script.md](./references/voice-script.md), ask for the recording first, then retime the film to the voice.
 
 ---
 
 ## Deliver
 
-The film per language, then a **fidelity note**: what follows the tradition, what departs from it, what was not verified, with links to the sources read. State that the audio is synthetic if it is, and recommend crediting the tradition and working with a practising troupe for anything published.
+The film per language with `qa/report.md`, then a **fidelity note**: what follows the tradition, what departs from it, what was not verified, with links to the sources read. State that the audio is synthetic if it is, and recommend crediting the tradition and working with a practising troupe for anything published.
