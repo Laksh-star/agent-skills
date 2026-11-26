@@ -25,6 +25,8 @@ Answer each with yes or no after running `scripts/qa.py` and looking at `qa/cont
 
 ## Characters and contact
 
+- [ ] `pose_check.py` passes: every hand reaches its target, no elbow folds under 25 degrees, no wrist bends past 70.
+- [ ] On the pose sheet and in full-size frames: elbows hang unless a gesture lifts them, resting hands rest on knees, lap or thighs (not planted on the floor), raised hands stay clear of the face.
 - [ ] Hands are readable, eyes look at what matters, nothing floats.
 - [ ] Every contact (a hand on a head, joined hands, a held object, a bow) checked at full resolution.
 - [ ] Sacred and traditional subjects drawn with dignity; nothing a tradition does not depict.

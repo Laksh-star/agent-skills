@@ -78,9 +78,11 @@ Copy [scripts/template_film.py](./scripts/template_film.py): a runnable two-scen
 - `cam_keys([(t, zoom, cx, cy), ...])` pushes in on whoever speaks.
 - The caption language is chosen by `FILM_LANG`.
 
-Characters come from [scripts/rig.py](./scripts/rig.py) (`person()` with stand/sit/kneel, arm targets, moods, `anjali()` for joined hands) on the drawing library [scripts/core.py](./scripts/core.py). Other styles: see [styles.md](./references/styles.md).
+Characters come from [scripts/rig.py](./scripts/rig.py) (`person()` with stand/sit/kneel, named arm gestures via `gesture()`, moods, `anjali()` for joined hands) on the drawing library [scripts/core.py](./scripts/core.py). Other styles: see [styles.md](./references/styles.md).
 
 ### 5. Check before rendering
+- Pose sheet once per cast: `python3 scripts/pose_sheet.py poses.jpg`. Elbows hang (not splayed), resting hands rest on something, shoulders join the body, wrists line up with the forearm.
+- Arms across the whole film: `python3 scripts/pose_check.py film.py`. It reports out-of-reach targets, folded elbows and bent-back wrists, with times.
 - Contact sheet at every beat: `python3 film.py sheet.jpg 3 9 13 ...`.
 - **Full-resolution close-ups of every contact**: a hand on a head, joined hands, a held object, a bow. Contact bugs only show at full size.
 - Full-resolution crop of one caption per script and the end card.

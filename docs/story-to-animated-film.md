@@ -72,7 +72,12 @@ flowchart TD
 | Score drifted 0.6 s | A crossfaded prologue shortened the audio. | Prologue audio padded by the crossfade length |
 | Long still stretches | Run on the finished films, a stillness check found a 17 s seated two-shot of dialogue and a 9 s near-frozen hold in one short. Nobody had flagged either. | `qa.py` fails anything still for 4 s outside intended holds; craft rule: a visible change every 2–3 s |
 | Peaks over 0 dB | The shadow play's percussion started instantly; AAC turned those clicks into a true peak of −0.3 dBTP. | 4 ms attacks on percussion; the join targets −2 dBTP; `qa.py` checks the delivered file |
+| Splayed elbows | Seated figures propped themselves on the floor with elbows out; raised hands crossed faces. The user spotted it, not the checks. | The rig hangs the upper arm and brings the forearm forward, rests seated hands on the knees, limits the wrist; named gestures; `pose_sheet.py` and `pose_check.py` |
 | Captions and timings scattered | Captions lived in code, per language, beside the timings they depended on. | `story.md`: one project file for headers, scenes with source refs, and timed captions; `story.py` checks reading speed |
+
+![Pose sheet before and after the arm fix](../assets/story-to-animated-film-poses.jpg)
+
+*The same gestures through the old rig (top) and the new one (bottom).*
 
 The full list, with symptoms and fixes, is in [`references/gotchas.md`](../skills/story-to-animated-film/references/gotchas.md).
 

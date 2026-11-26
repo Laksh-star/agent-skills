@@ -68,7 +68,7 @@ Each skill links to its runbook (`SKILL.md`) and to a field story under [`docs/`
 
 | Skill | What It Does | Field Story |
 |---|---|---|
-| **[`story-to-animated-film`](./skills/story-to-animated-film/SKILL.md)** | Turns a brief, a PDF, or a video into an original code-drawn animated story film in a style the user picks, with captions and a generated score, plus vertical shorts, language versions, and a prompt pack. No image or video model needed. | [10 traps + diagram](./docs/story-to-animated-film.md) |
+| **[`story-to-animated-film`](./skills/story-to-animated-film/SKILL.md)** | Turns a brief, a PDF, or a video into an original code-drawn animated story film in a style the user picks, with captions and a generated score, plus vertical shorts, language versions, and a prompt pack. No image or video model needed. | [11 traps + diagram](./docs/story-to-animated-film.md) |
 | **[`tholu-bommalata-shadow-play`](./skills/tholu-bommalata-shadow-play/SKILL.md)** | Tells a story as a code-drawn shadow-puppet film in the visual language of Tholu Bommalata, opening with the traditional invocation, with a fidelity check against published sources and a written list of departures. | [The question that fixed it](./docs/tholu-bommalata-shadow-play.md) |
 
 ### Host-Specific Plugins (Maintained Elsewhere)
