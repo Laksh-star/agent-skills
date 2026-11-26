@@ -22,7 +22,9 @@ Offer these when asking the style question, each with its one-line description, 
 `person(c, x, y, s, spec, pose, L=..., R=..., mood=..., gaze=..., t=t, fx=..., flip=..., talk=..., bob=..., lean=..., skipL=...)`
 
 - `spec`: `dict(skin, low, top?, sash?, thread?, hair='shikha'|'short'|'bun', hairc, beard?, mous?, band?, tilak?, bindi?, fem?)`
-- Arm target (standing, body space): pointing `R=dict(p=(120, -150), a=-pi*.2, pose='open', ts=-1)`; hand on heart `dict(p=(14, -72), a=pi, pose='flat', ts=-1)`; blessing raised `dict(p=(-110, -130), a=-pi*.62, pose='open', ts=1)`; speaking beat `dict(p=(96, -64 + 10*sin(t*2.4)), a=-.25)`.
+- Arms: start from a named gesture, then adjust: `L, R = gesture('chest', 'speak')`, or one arm `R = gesture('bless', side=1)`. Gestures: rest (pose-aware: hanging, hands on knees, hands on thighs), chest, speak, offer, raise, bless, point, akimbo, lap, knee. Animate by easing the target: `R = dict(gesture('speak', side=1), p=(96, -50 + 10*sin(t*2.4)))`.
+- How the arm is solved: the upper arm hangs at the side and the forearm comes toward the viewer whenever the hand is near; for far or high hands the elbow takes the lower side and never folds in across the body. Elbows go out only on request (`elbow='out'`, as in akimbo). The wrist follows the forearm and bends at most 70 degrees. `behind=True` draws an arm behind the body.
+- Check arms with `scripts/pose_sheet.py` (every pose × gesture at full size) and `scripts/pose_check.py film.py` (every 0.5 s: reach, elbow fold, wrist).
 - Joined hands: `L, R = anjali()`.
 - Walking: move `x` while `bob = sin(t*9)*5`.
 - Moods: serene, warm, smile, frown, shock, sad, smug, joy; switch with `mood_at(u, [(0, 'serene'), (4.5, 'frown')])`.

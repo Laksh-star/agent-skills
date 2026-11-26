@@ -5,7 +5,7 @@ Copy it, keep the structure, replace the scenes.
     FONTS_DIR=/path/from/setup_fonts FILM_LANG=en python3 template_film.py sheet.jpg 2 6 10 14 18
 writes a contact sheet of those times. Render the whole film with render_chunks.py.
 
-Structure:
+Structure (timings and captions come from story.md; pass another with STORY=path):
   T*      scene start times (film seconds)
   SEGS    (start, end, scene_fn, camera_fn); overlapping by 1.2 s crossfades the scenes
   CAPS    {lang: [(start, end, [line1, line2]), ...]}
@@ -18,13 +18,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import core
 from core import *
 from rig import person, anjali, cam, cam_keys, pi
+from story import load
 
 FD = os.environ.get('FONTS_DIR', 'fonts')
 core.FONTS.update({k: os.path.join(FD, f'{k}.ttf') for k in ('la', 'te', 'dev') if os.path.exists(os.path.join(FD, f'{k}.ttf'))})
 LANG = os.environ.get('FILM_LANG', 'en')
+STORY = load(os.environ.get('STORY', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'story.md')))
 W, H, FPS = 1920, 1080, 24
-T1, T2, T3 = 0, 11, 21
-DUR = 27.0
+T1, T2, T3 = (STORY.scene_starts[k] for k in ('meet', 'lesson', 'end'))   # timings live in story.md
+DUR = STORY.header('Duration')
 
 SAGE = dict(skin='#c2936c', low='#faf6ec', sash='#e8a23a', thread=True, hair='short', hairc='#e9e6e0', beard='#efece6')
 GIRL = dict(skin='#c98d5e', low='#c2413a', top='#2f7a6a', fem=True, hair='bun', hairc='#1b1012', bindi=True)
@@ -66,12 +68,7 @@ SEGS = [
 ]
 TITLE = {'en': ['The Quiet Teacher', 'a template story'], 'te': ['మౌన గురువు', 'ఒక నమూనా కథ']}
 END = {'en': ['Listening is the first lesson.', 'Source: your text, chapter and verse'], 'te': ['వినడమే మొదటి పాఠం.', 'మూలం: మీ గ్రంథం, అధ్యాయం']}
-CAPS = {
-    'en': [(5.6, 10.6, ['A girl walked to the old teacher’s tree.', 'He greeted her before she could speak.']),
-           (12.4, 19.6, ['“You came to ask a question,” he said.', '“Sit, and first, listen.”'])],
-    'te': [(5.6, 10.6, ['ఒక అమ్మాయి వృద్ధ గురువు చెట్టు దగ్గరికి వచ్చింది.', 'ఆమె మాట్లాడకముందే ఆయన నమస్కరించాడు.']),
-           (12.4, 19.6, ['“నువ్వు ఒక ప్రశ్న అడగడానికి వచ్చావు,” అన్నాడు.', '“కూర్చో, ముందు విను.”'])],
-}
+CAPS = {lang: STORY.captions(lang) for lang in STORY.languages()}
 
 def captions(c, t):
     for a, b, lines in CAPS[LANG]:

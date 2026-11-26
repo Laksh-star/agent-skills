@@ -69,7 +69,7 @@ def main():
         prev = None; t += rng.choice([1.4, 2.0, 2.6])
     def bell(f=1760, d=3.0):
         tt = np.arange(int(d * SR)) / SR
-        return (np.sin(2 * np.pi * f * tt) + 0.5 * np.sin(2 * np.pi * f * 2.76 * tt) + 0.25 * np.sin(2 * np.pi * f * 5.4 * tt)) * np.exp(-tt * 2.2)
+        return (np.sin(2 * np.pi * f * tt) + 0.5 * np.sin(2 * np.pi * f * 2.76 * tt) + 0.25 * np.sin(2 * np.pi * f * 5.4 * tt)) * np.exp(-tt * 2.2) * np.clip(tt / 0.004, 0, 1)   # 4 ms attack: no click for AAC to overshoot on
     bl = np.zeros(N)
     for bt in [0.8] + times(a.bells): add(bl, bt, bell() * 0.05)
     for ht in times(a.hits): add(bl, ht, bell(210, 2.5) * 0.25)

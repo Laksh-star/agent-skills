@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """A minimal, runnable shadow play: the invocation, then two scenes and captions.
-Copy it, keep the structure, replace the cast and scenes.
+Copy it, keep the structure, replace the cast and scenes. Timings and captions come from story.md
+(pass another with STORY=path).
 
     FONTS_DIR=/path/from/setup_fonts FILM_LANG=en python3 template_shadow.py sheet.jpg 1 4 10 16 22 30
 writes a contact sheet. Render the whole play with render_chunks.py in this folder.
@@ -12,13 +13,15 @@ import math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import core
 from shadow import *
+from story import load
 
 FD = os.environ.get('FONTS_DIR', 'fonts')
 core.FONTS.update({k: os.path.join(FD, f'{k}.ttf') for k in ('la', 'te', 'dev') if os.path.exists(os.path.join(FD, f'{k}.ttf'))})
 LANG = os.environ.get('FILM_LANG', 'en')
-PRO = 14.0                       # invocation length
-S1, S2, SD = 0.0, 9.0, 18.0      # story scene starts and story length (story time)
-DUR = PRO + SD
+STORY = load(os.environ.get('STORY', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'story.md')))
+PRO = STORY.header('Prologue')                                  # invocation length
+S1, S2 = (STORY.scene_starts[k] for k in ('forest', 'hut'))     # story time: begins when the prologue ends
+DUR = STORY.header('Duration'); SD = DUR - PRO
 
 SAGE = dict(skin='#d99a5a', low='#e8731e', border='#7a2a14', sash='#e8731e', hair='jata', beard='#3a2418', gold='#8a4a22')
 PRINCE = dict(skin='#3f6fc4', low='#e8b21e', border='#b3200f', sash='#fff3d6', thread=True, hair='shikha', crown=True, gold=G)   # Rama/Krishna-type heroes are blue
@@ -40,18 +43,8 @@ def sc_hut(c, t):
     puppet(c, lerp(-240, 440, ent), WOMAN, near=(72, 52 + (24 * sin(t * 2.6) if speak else 0)), far=(-14, 10), bob=hop(t, ent < 1))
 
 SCENES = [(S1, sc_forest), (S2, sc_hut)]
-CAPS = {
-    'en': [(4.0, 8.4, ['The prince bowed to the forest sage,', 'and the sage raised his hand in blessing.']),
-           (11.6, 16.8, ['At the hut, the good wife told him:', '“Duty done with love is the deepest learning.”'])],
-    'te': [(4.0, 8.4, ['రాకుమారుడు అడవిలోని మునికి నమస్కరించాడు;', 'ముని చేయెత్తి దీవించాడు.']),
-           (11.6, 16.8, ['గుడిసె దగ్గర ఆ ఇల్లాలు ఇలా అంది:', '“ప్రేమతో చేసే కర్తవ్యమే గొప్ప విద్య.”'])],
-}
-PCAPS = {
-    'en': [(2.6, 7.4, ['वक्रतुण्ड महाकाय सूर्यकोटिसमप्रभ ।', 'First Gaṇeśa is invoked, to clear every obstacle.']),
-           (9.0, 12.6, ['सरस्वति नमस्तुभ्यं वरदे कामरूपिणि ।', 'Then Sarasvatī, goddess of speech and learning.'])],
-    'te': [(2.6, 7.4, ['వక్రతుండ మహాకాయ సూర్యకోటి సమప్రభ ।', 'ముందుగా విఘ్నేశ్వరుని ప్రార్థన.']),
-           (9.0, 12.6, ['సరస్వతి నమస్తుభ్యం వరదే కామరూపిణి ।', 'తరువాత వాగ్దేవి సరస్వతీ స్తుతి.'])],
-}
+CAPS = {lang: STORY.captions(lang) for lang in STORY.languages()}
+PCAPS = {lang: STORY.captions(lang, 'prologue') for lang in STORY.languages()}
 
 def caption(c, t, table):
     for a, b, lines in table:

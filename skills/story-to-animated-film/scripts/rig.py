@@ -5,11 +5,75 @@ its feet at (x, y). A spec is a dict, e.g.
     dict(skin='#d09a6c', low='#f1e6cf', sash='#e8a23a', thread=True, hair='shikha', hairc='#1b1012', tilak=True)
     dict(skin='#c98d5e', low='#c2413a', top='#2f7a6a', fem=True, hair='bun', hairc='#1b1012', bindi=True)
 hair: shikha | short | bun.  Optional: beard, mous, band, thread, sash, tilak, bindi, hairc.
-Arms: L/R=dict(p=(x, y) wrist target in body space, a=hand angle, pose=open|flat|grip|pinch, ts=thumb side, held=fn).
+Arms: L/R=dict(p=(x, y) wrist target in body space, a=hand angle, pose=open|flat|grip|pinch, ts=thumb side, held=fn,
+      elbow='down'|'out'|'in' (default down: elbows hang with gravity), behind=True to draw the arm behind the body).
+      Or use a named gesture: L, R = gesture('bless', 'speak') or R=gesture('point', side=1).
+Arm rules the rig enforces (and logs to ARM_LOG for pose_check.py):
+  elbows hang down unless a gesture asks otherwise (a near hand is reached by bringing the forearm toward the viewer); the wrist bends at most 70 degrees off the forearm;
+  a hand target out of reach or folding the elbow under 25 degrees is reported.
 """
 import math, skia
 from core import *
 pi = math.pi
+
+SHOULDER = (46, -112)          # body space, right side; left is mirrored
+UPPER, FORE = 70, 66           # arm lengths: the wrist hangs just below the hip line, as on a person
+WRIST_LIMIT = math.radians(70)    # a wrist bends back about 70 degrees (joined hands need most of it)
+FOLD_LIMIT = math.radians(25)
+ARM_LOG = []                   # one entry per arm drawn: read by pose_check.py
+
+# Gestures for the RIGHT arm (side=+1) in body space; gesture() mirrors them for the left.
+GESTURES = {
+    'rest':   None,                                                         # pose-aware default (see REST)
+    'chest':  dict(p=(18, -62), a=pi * 1.1, pose='flat'),                   # hand on heart
+    'speak':  dict(p=(96, -50), a=-.35, pose='open'),                       # palm-up explaining
+    'raise':  dict(p=(86, -168), a=-pi / 2 + .15, pose='open'),             # hand up, as when making a point
+    'bless':  dict(p=(94, -148), a=-pi / 2 + .1, pose='open'),              # palm forward, fingers up
+    'point':  dict(p=(152, -108), a=-.22, pose='open'),                     # arm out to the side
+    'offer':  dict(p=(74, -36), a=-.1, pose='flat'),                        # palm up, giving or receiving
+    'akimbo': dict(p=(54, -18), a=pi * .85, pose='grip', elbow='out'),      # hand on hip; only when meant
+    'lap':    dict(p=(26, 6), a=pi * .92, pose='flat'),                     # seated: hands meet in the lap
+    'knee':   dict(p=(88, 6), a=.62, pose='flat'),                          # seated: hand rests on the knee
+}
+REST = {'stand': dict(p=(60, 22), pose='flat'),          # arms hang, nearly straight
+        'sit':   dict(p=(88, 6), a=.62, pose='flat'),     # hands on knees
+        'kneel': dict(p=(50, 12), pose='flat')}           # hands on thighs; the hand follows the forearm
+
+def mirror(spec):
+    if spec is None: return None
+    q = dict(spec); q['p'] = (-spec['p'][0], spec['p'][1])
+    if 'a' in spec: q['a'] = pi - spec['a']
+    if 'ts' in spec: q['ts'] = -spec['ts']
+    return q
+
+def gesture(*names, side=None):
+    """gesture('bless') -> right-arm spec; gesture('bless', side=-1) -> left; gesture('chest', 'speak') -> (L, R)."""
+    if len(names) == 2: return gesture(names[0], side=-1), gesture(names[1], side=1)
+    g = GESTURES[names[0]]; g = dict(g) if g else None
+    return mirror(g) if side == -1 else g
+
+def _wrap(a): return (a + pi) % (2 * pi) - pi
+
+def nat_arm(c, S, T, skin, side, elbow='down', bend=None, r=(18, 14, 11)):
+    """Two-bone arm from shoulder S toward target T. The elbow picks the natural side (down) unless told."""
+    dx, dy = T[0] - S[0], T[1] - S[1]; d0 = math.hypot(dx, dy); reach = UPPER + FORE
+    d = max(1e-3, min(d0, reach - .5)); base = math.atan2(dy, dx)
+    a = math.acos(clamp((UPPER ** 2 + d * d - FORE ** 2) / (2 * UPPER * d), -1, 1))
+    sols = [(S[0] + UPPER * math.cos(base + k * a), S[1] + UPPER * math.sin(base + k * a)) for k in (1, -1)]
+    W = (S[0] + d * math.cos(base), S[1] + d * math.sin(base))
+    hang = (S[0] + UPPER * math.cos(pi / 2 - side * .15), S[1] + UPPER * math.sin(pi / 2 - side * .15))
+    if bend is not None: E = sols[0] if bend > 0 else sols[1]
+    elif elbow == 'out': E = max(sols, key=lambda e: e[0] * side)
+    elif elbow == 'in': E = min(sols, key=lambda e: e[0] * side)
+    elif math.hypot(W[0] - hang[0], W[1] - hang[1]) <= FORE:
+        E = hang          # upper arm hangs at the side; the forearm comes forward toward the viewer (shorter on screen)
+    else:                 # hand far or high: the lower elbow, never folded in across the body
+        E = min(sols, key=lambda e: -e[1] + 2.0 * max(0.0, (S[0] - e[0]) * side))
+    cap = capsule(S[0] - side * 16, S[1] - 6, S[0], S[1], 15, r[0] + 1)  # shoulder rounds into the torso
+    ink(c, union([cap, capsule(*S, *E, r[0], r[1]), capsule(*E, *W, r[1], r[2])]), skin)
+    u1, u2 = (S[0] - E[0], S[1] - E[1]), (W[0] - E[0], W[1] - E[1])
+    fold = math.acos(clamp((u1[0] * u2[0] + u1[1] * u2[1]) / ((math.hypot(*u1) * math.hypot(*u2)) or 1), -1, 1))  # elbow angle as drawn
+    return E, W, math.atan2(W[1] - E[1], W[0] - E[0]), d0 - reach, fold
 
 def head(c, cx, cy, sp, m, gaze, t, fx=0, blind=False, talk=0.0, seed=0.0):
     skin = sp['skin']; R = 50; hc = sp.get('hairc', '#1b1012'); st = sp['hair']
@@ -75,6 +139,8 @@ def person(c, x, y, s, sp, pose='stand', lean=0.0, L=None, R=None, mood='serene'
         ink(c, oval(124, -10, 24, 10), skin, w=3)
         ink(c, smooth([(-50, -100), (44, -104), (120, -46), (130, -12), (20, 0), (-52, -8)]), lowc)
     c.translate(hip[0], hip[1] + bob); c.rotate(math.degrees(lean))
+    for side, spec in ((-1, L), (1, R)):
+        if spec is not None and spec.get('behind') and not (side == -1 and skipL): _arm(c, side, spec, pose, skin, dim=.12)
     tor = smooth([(-52, -120), (-30, -132), (30, -132), (52, -120), (48, -40), (48, 10), (-48, 10), (-48, -40)])
     ink(c, tor, sp['top'] if fem else skin)
     c.save(); c.clipPath(tor, skia.ClipOp.kIntersect, True)
@@ -89,16 +155,24 @@ def person(c, x, y, s, sp, pose='stand', lean=0.0, L=None, R=None, mood='serene'
     c.restore(); c.drawPath(tor, P(LINE, .85, stroke=4))
     ink(c, capsule(0, -126, 0, -152, 16, 15), skin, w=3)
     c.save(); c.translate(fx * 6, -198); c.rotate(math.degrees(tilt)); head(c, 0, 0, sp, m, gaze, t, fx, blind, talk, seed); c.restore()
-    if pose == 'stand': dl, dr = dict(p=(-60, -8), a=pi / 2), dict(p=(60, -8), a=pi / 2)
-    elif pose == 'sit': dl, dr = dict(p=(-76, 0), a=pi * .62, pose='flat'), dict(p=(76, 0), a=pi * .38, pose='flat')
-    else: dl, dr = dict(p=(-40, 6), a=pi * .45, pose='flat'), dict(p=(46, 6), a=pi * .4, pose='flat')
-    for side, spec, dflt in ((-1, L, dl), (1, R, dr)):
+    for side, spec in ((-1, L), (1, R)):
         if side == -1 and skipL: continue
-        q = dict(dflt); q.update(spec or {})
-        S = (side * 50, -114)
-        E, Wr, ang = arm(c, S, q['p'], skin, 68, 64, bend=q.get('bend', -side), r=(17, 14, 11))
-        hand(c, Wr[0], Wr[1], q.get('a', ang), q.get('pose', 'open'), ts=q.get('ts', -side), hs=.78, skin=skin, w=3, held=q.get('held'))
+        if spec is not None and spec.get('behind'): continue                     # drawn before the torso
+        _arm(c, side, spec, pose, skin)
     c.restore()
+
+
+def _arm(c, side, spec, pose, skin, dim=0.0):
+    dflt = REST[pose] if side == 1 else mirror(REST[pose])
+    q = dict(dflt); q.update(spec or {})
+    S = (side * SHOULDER[0], SHOULDER[1])
+    col_ = mixh(skin, '#000000', dim) if dim else skin
+    E, Wr, fang, short, fold = nat_arm(c, S, q['p'], col_, side, q.get('elbow', 'down'), q.get('bend'))
+    want = q.get('a', fang); dev = _wrap(want - fang)
+    ha = fang + clamp(dev, -WRIST_LIMIT, WRIST_LIMIT)
+    hand(c, Wr[0], Wr[1], ha, q.get('pose', 'open'), ts=q.get('ts', -side), hs=.78, skin=col_, w=3, held=q.get('held'))
+    ARM_LOG.append(dict(side=side, pose=pose, target=q['p'], shoulder=S, elbow=E, wrist=Wr, short=short,
+                        fold=math.degrees(fold), wrist_dev=math.degrees(abs(dev))))
 
 
 def anjali(dy=0):

@@ -40,3 +40,18 @@ Real failure modes hit while making a 2.5-minute film, four vertical shorts and 
 ## 8. Long held props read as sticks across the screen
 - **Symptom:** A musical instrument held at the hand extended far beyond the figure.
 - **Fix:** Angle long props down into the figure's silhouette and keep the holding arm close to the body.
+
+## 9. Instant percussion attacks become peaks over 0 dB
+- **Symptom:** The mixed score measures fine as WAV, but the delivered MP4 shows a true peak near or above 0 dBTP.
+- **Cause:** Strokes and bells that start at full level are clicks; the AAC encoder overshoots on them.
+- **Fix:** Give every percussion sound a 4 ms attack, target −2 dBTP in the join, and measure the delivered file with `qa.py`, not the WAV.
+
+## 10. Long still stretches nobody notices
+- **Symptom:** A seated dialogue held in one wide shot for 15 s or more; on a contact sheet it looks fine.
+- **Fix:** `qa.py` flags anything still for 4 s outside the `Holds:` ranges. Cut to a closer shot, push the camera in on the speaker, or bring in a gesture every 2–3 s.
+
+## 11. Splayed elbows and arms that look stuck on
+- **Symptom:** Seated figures prop themselves on the floor with elbows out in a "W"; a standing figure meant to look stunned stands with hands on hips; a raised hand crosses the face; arms look bolted to the side of the chest.
+- **Cause:** The old rig always bent the elbow outward, its resting hand targets were too close for a straight arm, seated rest put the hands on the floor, and the shoulder had no shape.
+- **Fix:** `rig.py` now hangs the upper arm and brings the forearm toward the viewer for near hands, takes the lower elbow for far ones, rests seated hands on the knees, rounds the shoulder into the torso and limits the wrist. Use `gesture()` names, then check with `pose_sheet.py` and `pose_check.py`.
+

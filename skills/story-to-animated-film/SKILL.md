@@ -14,7 +14,7 @@ Tell a story from a brief, a PDF or a video as an original animated film, drawn 
 
 The film is a story retold, not footage reused: from a video, take the story, never the pictures. For one verse set to a song, a lighter verse-to-short workflow fits better.
 
-Deep detail lives in references: [styles](./references/styles.md) · [intake](./references/intake.md) · [shorts and languages](./references/shorts-and-languages.md) · [prompt pack](./references/prompt-pack.md) · [gotchas](./references/gotchas.md).
+Deep detail lives in references: [styles](./references/styles.md) · [story.md format](./references/story-format.md) · [intake](./references/intake.md) · [shorts and languages](./references/shorts-and-languages.md) · [prompt pack](./references/prompt-pack.md) · [gotchas](./references/gotchas.md).
 
 ---
 
@@ -26,6 +26,19 @@ Deep detail lives in references: [styles](./references/styles.md) · [intake](./
 4. **Tied to the source.** Every beat carries its source reference (chapter, page, verse, timestamp) and a flag for whether it is from the source or invented. Paraphrase; never paste a modern copyrighted translation.
 5. **Dignity for sacred and traditional subjects.** No caricature, nothing a tradition does not depict, and research any living art form before borrowing its look.
 6. **Say what you did not check.** Translations you wrote are unproofread; music you generated is synthetic; say whether you watched the whole film or only checked stills.
+
+---
+
+## Craft Rules
+
+| Rule | Number | Checked by |
+|---|---|---|
+| Hook: the opening poses the story's question, readable with the sound off | by 3 s | `qa/opening.jpg`, eval.md |
+| The ending answers the opening question | the `Hook:` header | eval.md |
+| Captions are readable | ≤ 2 lines, < 21 characters a second | story.py |
+| The picture stays alive: an entrance, gesture, push or cut | every 2–3 s; never still ≥ 4 s outside title and end cards | qa.py |
+| Voiced versions keep a natural pace | about 2.5 spoken words a second; retime to the recording | eval.md |
+| Delivery loudness | −16 LUFS ±1, true peak ≤ −1 dBTP | qa.py |
 
 ---
 
@@ -47,8 +60,8 @@ At the end, offer (don't build unasked): an illustrated storybook from stills of
 ### 1. Intake
 Brief, PDF or video: see [intake.md](./references/intake.md). Quick version: `pdftotext -layout` for text PDFs, OCR for scans, a transcript plus scene-change frames for video (`ffmpeg -vf "select='gt(scene,0.35)'"`). The user must own or license any video.
 
-### 2. Story bible
-8–11 beats in story order. For each: what happens, who is on screen, source reference, source vs invented. One caption of at most two lines per beat; verses stay in their original script with a rendering beneath. Block every entrance (who walks in, from which side).
+### 2. Story bible: `story.md`
+Write the story as [story.md](./scripts/story.md), the single project file ([format](./references/story-format.md)): headers (style, aspect, languages, max duration, the hook, intended holds), a scene table with a source reference and source/invented flag per beat, and timed captions per language. 8–11 beats in story order; one caption of at most two lines per beat; verses stay in their original script with a rendering beneath. Block every entrance (who walks in, from which side) in the beat column. Validate with `python3 scripts/story.py story.md`.
 
 ### 3. Setup
 ```bash
@@ -59,14 +72,17 @@ Render one test line per script at full size and look at it before building scen
 
 ### 4. Build the film
 Copy [scripts/template_film.py](./scripts/template_film.py): a runnable two-scene film with captions in two languages. It shows the whole structure:
-- `T*` scene starts; `SEGS = [(start, end + 1.2, scene_fn, camera_fn)]` (the 1.2 s overlap crossfades scenes).
+- `T*` scene starts, `DUR` and `CAPS` are read from story.md (`STORY=path` picks the file).
+- `SEGS = [(start, end + 1.2, scene_fn, camera_fn)]` (the 1.2 s overlap crossfades scenes).
 - Scene functions use local time `u = t - T*` and ease between poses with `eio(u, a, b)`; idle life (blinks, sway, mouth flaps) runs on `t` so holds never freeze.
 - `cam_keys([(t, zoom, cx, cy), ...])` pushes in on whoever speaks.
-- Captions per language in `CAPS`, chosen by `FILM_LANG`.
+- The caption language is chosen by `FILM_LANG`.
 
-Characters come from [scripts/rig.py](./scripts/rig.py) (`person()` with stand/sit/kneel, arm targets, moods, `anjali()` for joined hands) on the drawing library [scripts/core.py](./scripts/core.py). Other styles: see [styles.md](./references/styles.md).
+Characters come from [scripts/rig.py](./scripts/rig.py) (`person()` with stand/sit/kneel, named arm gestures via `gesture()`, moods, `anjali()` for joined hands) on the drawing library [scripts/core.py](./scripts/core.py). Other styles: see [styles.md](./references/styles.md).
 
 ### 5. Check before rendering
+- Pose sheet once per cast: `python3 scripts/pose_sheet.py poses.jpg`. Elbows hang (not splayed), resting hands rest on something, shoulders join the body, wrists line up with the forearm.
+- Arms across the whole film: `python3 scripts/pose_check.py film.py`. It reports out-of-reach targets, folded elbows and bent-back wrists, with times.
 - Contact sheet at every beat: `python3 film.py sheet.jpg 3 9 13 ...`.
 - **Full-resolution close-ups of every contact**: a hand on a head, joined hands, a held object, a bow. Contact bugs only show at full size.
 - Full-resolution crop of one caption per script and the end card.
@@ -78,13 +94,19 @@ python3 scripts/render_chunks.py plan film.py        # prints chunk commands (~1
 python3 scripts/render_chunks.py chunk film.py 0 1300 part_00.mp4
 python3 scripts/render_chunks.py join final.mp4 score.wav part_00.mp4 part_01.mp4 ...
 ```
-Render chunks in the foreground; many sandboxes stop background jobs soon after a turn ends. About 0.35 s per frame on 2 cores. Pull frames from the final file and look at them, including either side of each join.
+Render chunks in the foreground; many sandboxes stop background jobs soon after a turn ends. About 0.35 s per frame on 2 cores.
 
-### 7. Shorts, languages, prompt pack
+### 7. QA
+```bash
+python3 scripts/qa.py final.mp4 --story story.md --out qa
+```
+It checks size, frame rate, audio, length, loudness, black frames, stillness and story.md, and writes `qa/report.md`, `qa/contact.jpg` and `qa/opening.jpg`. Look at both sheets and at the frames either side of each join, then answer [eval.md](./eval.md) yes or no. Fix or name every "no".
+
+### 8. Shorts, languages, prompt pack
 See [shorts-and-languages.md](./references/shorts-and-languages.md) and [prompt-pack.md](./references/prompt-pack.md).
 
 ---
 
 ## Deliver
 
-Send files as they finish. In the reply: the style and why; what each scene shows against the source, with references; what was invented; translation and fidelity caveats; whether you watched the full film or checked stills; the one or two weakest spots.
+Send files as they finish, with `qa/report.md`. In the reply: the style and why; what each scene shows against the source, with references; what was invented; translation and fidelity caveats; whether you watched the full film or checked stills; the one or two weakest spots.

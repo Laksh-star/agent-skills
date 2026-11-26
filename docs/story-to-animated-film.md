@@ -38,12 +38,13 @@ Every frame was drawn in Python with skia and piped to ffmpeg: no image or video
 ```mermaid
 flowchart TD
     S["Source<br/>brief · PDF · video"] --> Q["Ask first<br/>style + deliverables<br/>(recommend one)"]
-    Q --> B["Story bible<br/>beats with source refs<br/>source vs invented"]
+    Q --> B["story.md<br/>beats with source refs<br/>source vs invented · captions"]
     B --> V["One still<br/>in the chosen style"]
     V --> F["Build scenes<br/>template_film.py + rig.py"]
     F --> C["Check<br/>contact sheet + full-size<br/>close-ups of every contact"]
     C --> R["Score + chunked render<br/>score.py · render_chunks.py"]
-    R --> O["Outputs<br/>master · shorts · languages<br/>prompt pack"]
+    R --> QA["QA<br/>qa.py measures · eval.md<br/>yes/no checklist"]
+    QA --> O["Outputs<br/>master · shorts · languages<br/>prompt pack"]
 
     style S fill:#1e293b,stroke:#818cf8,color:#f8fafc
     style Q fill:#312e81,stroke:#c084fc,color:#ffffff
@@ -52,6 +53,7 @@ flowchart TD
     style F fill:#1e293b,stroke:#a855f7,color:#f8fafc
     style C fill:#451a03,stroke:#f59e0b,color:#fef3c7
     style R fill:#064e3b,stroke:#10b981,color:#ecfdf5
+    style QA fill:#451a03,stroke:#f59e0b,color:#fef3c7
     style O fill:#312e81,stroke:#c084fc,color:#ffffff
 ```
 
@@ -68,8 +70,22 @@ flowchart TD
 | Style chosen too late | The look was fixed before the user saw it. | Ask the style first, recommend one, show one still before building |
 | Shorts cut feet off | A 9:16 crop of a 16:9 scene lost the ground line. | Recompose per scene with its own camera keys |
 | Score drifted 0.6 s | A crossfaded prologue shortened the audio. | Prologue audio padded by the crossfade length |
+| Long still stretches | Run on the finished films, a stillness check found a 17 s seated two-shot of dialogue and a 9 s near-frozen hold in one short. Nobody had flagged either. | `qa.py` fails anything still for 4 s outside intended holds; craft rule: a visible change every 2–3 s |
+| Peaks over 0 dB | The shadow play's percussion started instantly; AAC turned those clicks into a true peak of −0.3 dBTP. | 4 ms attacks on percussion; the join targets −2 dBTP; `qa.py` checks the delivered file |
+| Splayed elbows | Seated figures propped themselves on the floor with elbows out; raised hands crossed faces. The user spotted it, not the checks. | The rig hangs the upper arm and brings the forearm forward, rests seated hands on the knees, limits the wrist; named gestures; `pose_sheet.py` and `pose_check.py` |
+| Captions and timings scattered | Captions lived in code, per language, beside the timings they depended on. | `story.md`: one project file for headers, scenes with source refs, and timed captions; `story.py` checks reading speed |
+
+![Pose sheet before and after the arm fix](../assets/story-to-animated-film-poses.jpg)
+
+*The same gestures through the old rig (top) and the new one (bottom).*
 
 The full list, with symptoms and fixes, is in [`references/gotchas.md`](../skills/story-to-animated-film/references/gotchas.md).
+
+---
+
+## Credits
+
+The QA step, the yes/no eval checklist, the single project file and the numbered craft rules were adapted from ideas in [petergyang/video-explainer](https://github.com/petergyang/video-explainer) (MIT). No code was copied; `qa.py` and `story.py` were written for this pipeline and calibrated on our own films.
 
 ---
 
@@ -83,6 +99,6 @@ The full list, with symptoms and fixes, is in [`references/gotchas.md`](../skill
 
 ## Status
 
-- **Last verified:** 2026-11-25
+- **Last verified:** 2026-11-26
 - **Verified against:** full template render from a fresh copy of the repo, in English and Telugu, including the score and chunked join.
 - **Hosts:** agent-agnostic
