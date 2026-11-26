@@ -32,3 +32,9 @@ Real failure modes hit while making a 2.5-minute shadow play, in English and Tel
 
 ## 7. Invocation music pushes the story score out of sync
 - **Fix:** `score_shadow.py` makes the prologue audio 0.6 s longer than the prologue picture and crossfades over that 0.6 s, so the story music starts exactly at the cut.
+
+## 8. Instant percussion attacks become peaks over 0 dB
+- **Symptom:** The mixed score measures fine as WAV, but the delivered MP4 shows a true peak near or above 0 dBTP.
+- **Cause:** Strokes and bells that start at full level are clicks; the AAC encoder overshoots on them.
+- **Fix:** Give every percussion sound a 4 ms attack, target −2 dBTP in the join, and measure the delivered file with `qa.py`, not the WAV.
+

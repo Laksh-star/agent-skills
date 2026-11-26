@@ -42,17 +42,21 @@ The second version fixed the first three. The skill now makes that check the **f
 flowchart LR
     R["Read sources<br/>+ ask for references<br/>+ ask about a troupe"] --> D["Departures list<br/>(kept while designing)"]
     D --> I["Invocation<br/>cast pinned at edges<br/>Ganesha · Saraswati"]
-    I --> S["Scenes<br/>profile puppets · rods<br/>entrances by tradition"]
+    I --> S["Scenes from story.md<br/>profile puppets · rods<br/>entrances by tradition"]
     S --> A["Audio<br/>real voice preferred<br/>or labelled synthetic"]
-    A --> N["Fidelity note<br/>followed · departed<br/>not verified · sources"]
+    A --> Q["QA<br/>qa.py · eval.md<br/>with fidelity checks"]
+    Q --> N["Fidelity note<br/>followed · departed<br/>not verified · sources"]
 
     style R fill:#451a03,stroke:#f59e0b,color:#fef3c7
     style D fill:#1e293b,stroke:#818cf8,color:#f8fafc
     style I fill:#312e81,stroke:#c084fc,color:#ffffff
     style S fill:#1e293b,stroke:#a855f7,color:#f8fafc
     style A fill:#1e293b,stroke:#818cf8,color:#f8fafc
+    style Q fill:#451a03,stroke:#f59e0b,color:#fef3c7
     style N fill:#064e3b,stroke:#10b981,color:#ecfdf5
 ```
+
+The QA step and eval checklist follow the film skill's (see its [credits](./story-to-animated-film.md#credits)); here the checklist adds the fidelity questions. On our own play, the QA caught a true peak of −0.3 dBTP caused by percussion with instant attacks, now softened in `score_shadow.py`.
 
 ---
 
@@ -66,6 +70,6 @@ The Telugu voice-script guide in [`references/voice-script.md`](../skills/tholu-
 
 ## Status
 
-- **Last verified:** 2026-11-25
+- **Last verified:** 2026-11-26
 - **Verified against:** full template render from a fresh copy of the repo, in English and Telugu, including the score and chunked join.
 - **Hosts:** agent-agnostic
