@@ -116,4 +116,7 @@ For detailed failure modes and fixes (Node 26 ESM `.js` imports, Neon idle disco
    - `dig +short CNAME <app-hostname>` resolves to Vercel's target.
    - Vercel Domains shows **Valid Configuration** with HTTPS/TLS active.
    - Open `https://<app-hostname>/` and confirm `HTTP 200`, `server: Vercel` response headers on both `/` and `/api/*`, no Vercel login prompt, live DB data, and branded favicon (`200 OK`).
-7. Advise keeping the old Replit deployment idle for ~24 hours while regional DNS caches drain before shutting it down.
+7. **Decommission Replit (after ~24 hours):**
+   - Verify global DNS across multiple resolvers (`dig +short <app-hostname> @1.1.1.1` and `@8.8.8.8`) returns only Vercel and no old Replit IP.
+   - In Replit, disconnect the custom domain under **Domains** and click **Publishing → Adjust settings → Unpublish** (do **not** delete the Repl or database — unpublishing stops deployment compute billing while keeping an offline backup).
+   - Re-verify `https://<app-hostname>/` immediately afterward (`HTTP 200`, `server: Vercel`, live API data).
